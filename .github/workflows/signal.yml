@@ -2,8 +2,7 @@ name: FX Signal
 
 on:
   schedule:
-    # 15分ごと（UTC基準）
-    - cron: "*/15 * * * *"
+    - cron: "1,16,31,46 * * * *"
 
   workflow_dispatch:
 
