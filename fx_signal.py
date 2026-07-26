@@ -22,18 +22,50 @@ df = yf.download(
 if hasattr(df.columns, "nlevels") and df.columns.nlevels > 1:
     df.columns = df.columns.get_level_values(0)
 
+# ==========================
+# 移動平均
+# ==========================
+
+df["SMA25"] = df["Close"].rolling(25).mean()
+df["SMA75"] = df["Close"].rolling(75).mean()
+df["SMA200"] = df["Close"].rolling(200).mean()
+
+
 # 最新足
 last = df.iloc[-1]
+
+price = float(last["Close"])
+
+sma25 = float(last["SMA25"])
+sma75 = float(last["SMA75"])
+sma200 = float(last["SMA200"])
+
+values = {
+    "25SMA": sma25,
+    "75SMA": sma75,
+    "200SMA": sma200,
+}
+
+order = " < ".join(
+    key for key, _ in sorted(values.items(), key=lambda x: x[1])
+)
 
 print(df.columns)
 
 price = float(last["Close"])
 
 message = f"""
-✅ USDJPY取得成功
+📈 USDJPY【15分足】
 
-現在価格
+価格
 {price:.3f}
+
+SMA順序
+{order}
+
+25SMA : {sma25:.3f}
+75SMA : {sma75:.3f}
+200SMA : {sma200:.3f}
 
 取得本数
 {len(df)}
