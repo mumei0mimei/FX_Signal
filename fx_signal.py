@@ -21,6 +21,8 @@ df = yf.download(
 # 最新足
 last = df.iloc[-1]
 
+print(df.columns)
+
 price = float(last["Close"])
 
 message = f"""
