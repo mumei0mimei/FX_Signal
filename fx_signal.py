@@ -209,13 +209,13 @@ def main():
             # 実行タイミング制御
             # ==========================
 
-            # 1時間足は毎時00分だけ
-            if timeframe_name == "1時間" and minute != 0:
+            # 1時間足は毎時01分だけ
+            if timeframe_name == "1時間" and minute != 1:
                 continue
-
-            # 4時間足は4時間ごとの00分だけ
+            
+            # 4時間足は4時間ごとの01分だけ
             if timeframe_name == "4時間":
-                if minute != 0:
+                if minute != 1:
                     continue
                 if hour % 4 != 0:
                     continue
