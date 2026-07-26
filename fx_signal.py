@@ -165,21 +165,36 @@ SMA順序   : {order}
 
 def main():
 
-    # ドル円15分足取得
-    df = download_data(
-        ticker="JPY=X",
-        interval="15m"
-    )
 
-    # 指標計算
-    df = calculate_indicators(df)
+    WATCHLIST = {
+        "USDJPY": "JPY=X",
+        "EURUSD": "EURUSD=X",
+        "EURGBP": "EURGBP=X",
+        "AUDJPY": "AUDJPY=X",
+    }
 
-    # シグナル判定
-    send_discord(
-        df=df,
-        pair_name="USDJPY",
-        timeframe="15分"
-    )
+    for pair_name, ticker in WATCHLIST.items():
+
+        print(f"{pair_name} チェック中...")
+    
+        df = download_data(
+            ticker=ticker,
+            interval="15m"
+        )
+    
+        df = calculate_indicators(df)
+    
+        if check_signal(df):
+    
+            send_discord(
+                df=df,
+                pair_name=pair_name,
+                timeframe="15分"
+            )
+            
+        else:
+            print(f"{pair_name}：シグナルなし")
+
 
 
 if __name__ == "__main__":
