@@ -2,7 +2,7 @@ name: FX Signal
 
 on:
   schedule:
-    - cron: "1,16,31,46 * * * *"
+    - cron: "*/3 * * * *"
 
   workflow_dispatch:
 
