@@ -173,27 +173,35 @@ def main():
         "AUDJPY": "AUDJPY=X",
     }
 
+    TIMEFRAMES = {
+        "15分": "15m",
+        "1時間": "1h",
+        "4時間": "4h",
+    }
+
     for pair_name, ticker in WATCHLIST.items():
 
-        print(f"{pair_name} チェック中...")
-    
-        df = download_data(
-            ticker=ticker,
-            interval="15m"
-        )
-    
-        df = calculate_indicators(df)
-    
-        if check_signal(df):
-    
-            send_discord(
-                df=df,
-                pair_name=pair_name,
-                timeframe="15分"
+        for timeframe_name, interval in TIMEFRAMES.items():
+
+            print(f"{pair_name}【{timeframe_name}】チェック中...")
+
+            df = download_data(
+                ticker=ticker,
+                interval=interval
             )
-            
-        else:
-            print(f"{pair_name}：シグナルなし")
+
+            df = calculate_indicators(df)
+
+            if check_signal(df):
+
+                send_discord(
+                    df=df,
+                    pair_name=pair_name,
+                    timeframe=timeframe_name
+                )
+
+            else:
+                print(f"{pair_name}【{timeframe_name}】シグナルなし")
 
 
 
