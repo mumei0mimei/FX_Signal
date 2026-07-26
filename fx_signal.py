@@ -1,30 +1,41 @@
 import os
 import requests
-from datetime import datetime
+import yfinance as yf
 
-# GitHub SecretsからWebhook URLを取得
+# ==========================
+# Discord
+# ==========================
 WEBHOOK_URL = os.environ["DISCORD_WEBHOOK"]
 
-# 現在時刻
-now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+# ==========================
+# データ取得
+# ==========================
+df = yf.download(
+    "JPY=X",
+    period="10d",
+    interval="15m",
+    progress=False,
+    auto_adjust=False,
+)
+
+# 最新足
+last = df.iloc[-1]
+
+price = float(last["Close"])
 
 message = f"""
-✅ GitHub Actions テスト成功！
+✅ USDJPY取得成功
 
-時刻
-{now}
+現在価格
+{price:.3f}
 
-ここまで届けば
-・GitHub Actions
-・Python
-・Discord
-の接続は成功です！
+取得本数
+{len(df)}
 """
 
-response = requests.post(
+requests.post(
     WEBHOOK_URL,
     json={"content": message}
 )
 
-print("Status:", response.status_code)
-print(response.text)
+print(df.tail())
