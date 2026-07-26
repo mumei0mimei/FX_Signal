@@ -18,6 +18,10 @@ df = yf.download(
     auto_adjust=False,
 )
 
+# MultiIndex対策
+if hasattr(df.columns, "nlevels") and df.columns.nlevels > 1:
+    df.columns = df.columns.get_level_values(0)
+
 # 最新足
 last = df.iloc[-1]
 
