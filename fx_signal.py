@@ -2,6 +2,8 @@ import os
 import requests
 import yfinance as yf
 
+from datetime import datetime, timezone
+
 # ==========================
 # Discord
 # ==========================
@@ -59,45 +61,56 @@ def calculate_indicators(df):
 
 def check_signal(df):
 
-    # 最新3本
     prev2 = df.iloc[-3]
     prev1 = df.iloc[-2]
     curr  = df.iloc[-1]
 
-    # ---------- 前々足 ----------
-    prev2_under = prev2["Close"] < prev2["Lower1"]
-
-    prev2_near2 = (
-        abs(prev2["Close"] - prev2["Lower2"])
-        <
-        abs(prev2["Close"] - prev2["Lower1"])
-    )
-
-    # ---------- 前足 ----------
-    prev1_under = prev1["Close"] < prev1["Lower1"]
-
-    prev1_near2 = (
-        abs(prev1["Close"] - prev1["Lower2"])
-        <
-        abs(prev1["Close"] - prev1["Lower1"])
-    )
-
-    # ---------- 現在足 ----------
-    curr_under = curr["Close"] < curr["Lower1"]
-
-    curr_near1 = (
-        abs(curr["Close"] - curr["Lower1"])
-        <
-        abs(curr["Close"] - curr["Lower2"])
-    )
-
     return (
-        prev2_under
-        and prev2_near2
-        and prev1_under
-        and prev1_near2
-        and curr_under
-        and curr_near1
+
+        # ==========================
+        # 現在足
+        # ==========================
+
+        (curr["Close"] >= curr["Lower2"])
+        and
+        (curr["Close"] < curr["Lower1"])
+
+        # -1σ寄り
+        and
+        (
+            curr["Close"]
+            >
+            (curr["Lower1"] + curr["Lower2"]) / 2
+        )
+
+        # ==========================
+        # 前足
+        # ==========================
+
+        and
+        (prev1["Close"] < prev1["Lower1"])
+
+        and
+        (
+            prev1["Close"]
+            <=
+            (prev1["Lower1"] + prev1["Lower2"]) / 2
+        )
+
+        # ==========================
+        # 前々足
+        # ==========================
+
+        and
+        (prev2["Close"] < prev2["Lower1"])
+
+        and
+        (
+            prev2["Close"]
+            <=
+            (prev2["Lower1"] + prev2["Lower2"]) / 2
+        )
+
     )
 
 
@@ -163,8 +176,17 @@ SMA順序   : {order}
     )
 
 
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+
 def main():
 
+    # 日本時間
+    now = datetime.now(ZoneInfo("Asia/Tokyo"))
+
+    minute = now.minute
+    hour = now.hour
 
     WATCHLIST = {
         "USDJPY": "JPY=X",
@@ -173,15 +195,30 @@ def main():
         "AUDJPY": "AUDJPY=X",
     }
 
-    TIMEFRAMES = {
-        "15分": "15m",
-        "1時間": "1h",
-        "4時間": "4h",
-    }
+    TIMEFRAMES = [
+        ("15分", "15m"),
+        ("1時間", "1h"),
+        ("4時間", "4h"),
+    ]
 
     for pair_name, ticker in WATCHLIST.items():
 
-        for timeframe_name, interval in TIMEFRAMES.items():
+        for timeframe_name, interval in TIMEFRAMES:
+
+            # ==========================
+            # 実行タイミング制御
+            # ==========================
+
+            # 1時間足は毎時00分だけ
+            if timeframe_name == "1時間" and minute != 0:
+                continue
+
+            # 4時間足は4時間ごとの00分だけ
+            if timeframe_name == "4時間":
+                if minute != 0:
+                    continue
+                if hour % 4 != 0:
+                    continue
 
             print(f"{pair_name}【{timeframe_name}】チェック中...")
 
@@ -202,7 +239,6 @@ def main():
 
             else:
                 print(f"{pair_name}【{timeframe_name}】シグナルなし")
-
 
 
 if __name__ == "__main__":
