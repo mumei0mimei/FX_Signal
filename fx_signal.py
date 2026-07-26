@@ -118,50 +118,49 @@ def send_discord(df, pair_name, timeframe):
 
     bb_width = float(last["BB_Width"])
 
-    # SMA順序
+    # ==========================
+    # SMA配列
+    # ==========================
     values = {
-        "25": sma25,
-        "75": sma75,
-        "200": sma200,
+        "M": sma25,
+        "L": sma75,
+        "Ex": sma200,
     }
 
-    order = " < ".join(
+    sorted_keys = [
         key for key, _ in sorted(values.items(), key=lambda x: x[1])
-    )
+    ]
 
-    # トレンド判定
-    if order == "25 < 75 < 200":
-        trend = "下降トレンド"
-    elif order == "200 < 75 < 25":
-        trend = "上昇トレンド"
-    else:
-        trend = "その他"
+    # 例：MLEx
+    pattern = "".join(sorted_keys)
 
+    # 例：M < L < Ex
+    order = " < ".join(sorted_keys)
+
+    # ==========================
+    # Discord通知
+    # ==========================
     message = f"""
 🚨 {pair_name}【{timeframe}】
 
-価格
-{price:.3f}
+{pattern}｜BBW {bb_width:.3f}
 
-SMA順序
-{order}
-（{trend}）
+価格      : {price:.3f}
 
-25SMA : {sma25:.3f}
-75SMA : {sma75:.3f}
-200SMA : {sma200:.3f}
+SMA順序   : {order}
 
--1σ : {lower1:.3f}
--2σ : {lower2:.3f}
+25SMA     : {sma25:.3f}
+75SMA     : {sma75:.3f}
+200SMA    : {sma200:.3f}
 
-BB Width : {bb_width:.2f}
+-1σ       : {lower1:.3f}
+-2σ       : {lower2:.3f}
 """
 
     requests.post(
         WEBHOOK_URL,
         json={"content": message}
     )
-
 
 
 def main():
