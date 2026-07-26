@@ -1,8 +1,8 @@
 import os
 import requests
 import yfinance as yf
-
-from datetime import datetime, timezone
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 # ==========================
 # Discord
