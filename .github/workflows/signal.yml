@@ -1,0 +1,29 @@
+name: FX Signal
+
+on:
+  schedule:
+    # 15分ごと（UTC基準）
+    - cron: "*/15 * * * *"
+
+  workflow_dispatch:
+
+jobs:
+  signal:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python Setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Packages
+        run: pip install -r requirements.txt
+
+      - name: Run Python
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: python fx_signal.py
