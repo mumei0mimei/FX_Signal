@@ -176,16 +176,11 @@ def main():
     df = calculate_indicators(df)
 
     # シグナル判定
-    if check_signal(df):
-
-        send_discord(
-            df=df,
-            pair_name="USDJPY",
-            timeframe="15分"
-        )
-
-    else:
-        print("シグナルなし")
+    send_discord(
+        df=df,
+        pair_name="USDJPY",
+        timeframe="15分"
+    )
 
 
 if __name__ == "__main__":
