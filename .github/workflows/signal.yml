@@ -2,7 +2,8 @@ name: test schedule
 
 on:
   schedule:
-    - cron: "1,16,31,46 * * * *"
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
 jobs:
   signal:
     runs-on: ubuntu-latest
