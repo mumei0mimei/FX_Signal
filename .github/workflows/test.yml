@@ -9,3 +9,13 @@ on:
     - cron: "*/5 * * * *"
 
   workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: test
+        run: |
+          echo "GitHub Actions OK"
+          date
