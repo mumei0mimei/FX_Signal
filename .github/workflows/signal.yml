@@ -2,7 +2,7 @@ name: test schedule v
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "1,16,31,46 * * * *"
   workflow_dispatch:
 jobs:
   signal:
