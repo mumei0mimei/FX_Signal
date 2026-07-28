@@ -184,6 +184,8 @@ def main():
 
     # 日本時間
     now = datetime.now(ZoneInfo("Asia/Tokyo"))
+    print(f"Started at {now:%Y-%m-%d %H:%M:%S}")
+    print(f"Minute={now.minute}, Hour={now.hour}")
 
     print("===== FX Signal Started =====")
     print(now)
